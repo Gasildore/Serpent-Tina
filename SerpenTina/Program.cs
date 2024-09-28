@@ -1,23 +1,49 @@
 ﻿using SerpenTina;
+using Shared;
 using System.Diagnostics;
 
-internal class Program//a
+internal class Program
 {
-    static void Main()//b
+    const float _targetFrameTime = 1f / 60f;
+    static void Main()
     {
-        var gameLogic = new SnakeGameLogic();//c
-        var input = new ConsoleInput();//d
-        gameLogic.InitializeInput(input);//e
-        var lastFrameTime = DateTime.Now;//f
-        gameLogic.GoToGameplay();//g
+        Console.OutputEncoding = System.Text.Encoding.UTF8;
+        var gameLogic = new SnakeGameLogic();
+        var input = new ConsoleInput();        
+        var lastFrameTime = DateTime.Now;
+        var palette = gameLogic.CreatePalette();
 
-        while (true)//h
+        var renderer0 = new ConsoleRenderer(palette);
+        var renderer1 = new ConsoleRenderer(palette);
+
+        var prevRenderer = renderer0;
+        var currRenderer = renderer1;
+
+        gameLogic.InitializeInput(input);
+
+        while (true)
         {
-            input.Update();//h
-            var frameStartTime = DateTime.Now;//i
-            float deltaTime = (float)(frameStartTime - lastFrameTime).TotalSeconds;//j
-            gameLogic.Update(deltaTime);//k
-            lastFrameTime = frameStartTime;//l
+            input.Update();
+            var frameStartTime = DateTime.Now;
+            float deltaTime = (float)(frameStartTime - lastFrameTime).TotalSeconds;
+
+            gameLogic.DrawNewState(deltaTime, currRenderer);
+
+            if (!currRenderer.Equals(prevRenderer))
+                currRenderer.Render();
+
+            var tmp = prevRenderer;
+            prevRenderer = currRenderer;
+            currRenderer = tmp;
+            currRenderer.Clear();
+
+            lastFrameTime = frameStartTime;
+
+            var nextFrameTime = frameStartTime + TimeSpan.FromSeconds(_targetFrameTime);
+            var endFrameTime = DateTime.Now;
+
+            if (nextFrameTime > endFrameTime)
+                Thread.Sleep((int)(nextFrameTime - endFrameTime).TotalMilliseconds);
         }
     }
 }

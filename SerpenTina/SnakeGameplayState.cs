@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Shared;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,37 +7,42 @@ using System.Threading.Tasks;
 
 namespace SerpenTina
 {
-    internal enum SnakeDir//g
+    internal enum SnakeDir
     {
         Up, Down, Left, Right,
     }
-    internal class SnakeGameplayState : BaseGameState//a,b
+    internal class SnakeGameplayState : BaseGameState
     {
-        private struct Cell//d
+        const char _bodySymbol = '\u25CF';
+        public int _fieldWidth {  get; set; }
+        public int _fieldHeight { get; set; }
+
+        private List<Cell> _body = new();
+        private SnakeDir _currentDir = SnakeDir.Left;
+        private float _timeToMove = 0f;
+
+        private struct Cell
         {
             public int _x; public int _y;
-            public Cell(int x, int y)//e
+            public Cell(int x, int y)
             {
                 _x = x;
                 _y = y;
             }
         }
 
-        private List<Cell> _body = new();//f
-        private SnakeDir _currentDir = SnakeDir.Left;//h
-        private float _timeToMove = 0f;//k
-        public void SetDirection(SnakeDir dir)//i
+        public void SetDirection(SnakeDir dir)
         {
             _currentDir = dir;
         }
-        private Cell ShiftTo(Cell newCell, SnakeDir toDir)//j
+        private Cell ShiftTo(Cell newCell, SnakeDir toDir)
         {
             switch (toDir)
             {
                 case SnakeDir.Up:
-                    return new Cell(newCell._x, newCell._y + 1);
-                case SnakeDir.Down:
                     return new Cell(newCell._x, newCell._y - 1);
+                case SnakeDir.Down:
+                    return new Cell(newCell._x, newCell._y + 1);
                 case SnakeDir.Left:
                     return new Cell(newCell._x - 1, newCell._y);
                 case SnakeDir.Right:
@@ -45,27 +51,35 @@ namespace SerpenTina
             return newCell;
         }
 
-        public override void Reset()//c
+        public override void Reset()
         {
-            _body.Clear();//1
-            _currentDir = SnakeDir.Left;//2
-            _body.Add(new(0, 0));//3
-            _timeToMove = 0f;//4
+            _body.Clear();
+            var middleX = _fieldWidth / 2;
+            var middleY = _fieldHeight / 2;
+            _currentDir = SnakeDir.Left;
+            _body.Add(new(middleX, middleY));
+            _timeToMove = 0f;
         }
 
-        public override void Update(float deltaTime)//c
+        public override void Update(float deltaTime)
         {
-            _timeToMove -= deltaTime;//1
-            if (_timeToMove > 0f)//2
+            _timeToMove -= deltaTime;
+            if (_timeToMove > 0f)
                 return;
-            _timeToMove = 1f / 4;//3
+            _timeToMove = 1f / 4;
 
-            var head = _body[0];//n
-            var nextCell = ShiftTo(head, _currentDir);//o,p
-            _body.RemoveAt(_body.Count - 1);//q
-            _body.Insert(0, nextCell);//r
+            var head = _body[0];
+            var nextCell = ShiftTo(head, _currentDir);
+            _body.RemoveAt(_body.Count - 1);
+            _body.Insert(0, nextCell);
+        }
 
-            Console.WriteLine($"{_body[0]._x} {_body[0]._y}");//s
+        public override void Draw(ConsoleRenderer renderer)
+        {
+            foreach (Cell cell in _body)
+            {
+                renderer.SetPixel(cell._x, cell._y, _bodySymbol, 1);
+            }            
         }
     }
 }

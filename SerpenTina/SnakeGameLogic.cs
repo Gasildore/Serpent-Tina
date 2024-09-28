@@ -6,37 +6,55 @@ using System.Threading.Tasks;
 
 namespace SerpenTina
 {
-    internal class SnakeGameLogic : BaseGameLogic//a,b
+    internal class SnakeGameLogic : BaseGameLogic
     {
-        private SnakeGameplayState _gameplayState = new SnakeGameplayState();//d
-        public override void Update(float deltaTime)//c
+        private SnakeGameplayState _gameplayState = new SnakeGameplayState();
+        public override void Update(float deltaTime)
         {
-            _gameplayState.Update(deltaTime);//h
+            if (_currentState != _gameplayState)
+                GoToGameplay();
         }
-        public override void OnArrowUp()//e
+        public override void OnArrowUp()
         {
+            if (_currentState != _gameplayState) return;
             _gameplayState.SetDirection(SnakeDir.Up);
         }
         public override void OnArrowDown()
         {
+            if (_currentState != _gameplayState) return;
             _gameplayState.SetDirection(SnakeDir.Down);
         }
 
         public override void OnArrowLeft()
         {
+            if (_currentState != _gameplayState) return;
             _gameplayState.SetDirection(SnakeDir.Left);
         }
 
         public override void OnArrowRight()
         {
+            if (_currentState != _gameplayState) return;
             _gameplayState.SetDirection(SnakeDir.Right);
         }
 
-        public void GoToGameplay()//g
+        public void GoToGameplay()
         {
+            _gameplayState._fieldWidth = _screenWidth;
+            _gameplayState._fieldHeight = _screenHeight;
+            ChangeState(_gameplayState);
+
             _gameplayState.Reset();
         }
 
-        
+        public override ConsoleColor[] CreatePalette()
+        {
+            return
+            [
+                ConsoleColor.Red,
+                ConsoleColor.Green,
+                ConsoleColor.Blue,
+                ConsoleColor.White,
+            ];
+        }
     }
 }

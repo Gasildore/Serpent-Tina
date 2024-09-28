@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Shared;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,9 +7,11 @@ using System.Threading.Tasks;
 
 namespace SerpenTina
 {
-    internal abstract class BaseGameState//a
+    internal abstract class BaseGameState
     {
-        public abstract void Update(float deltaTime);//b
-        public abstract void Reset();//c
+        public abstract void Update(float deltaTime);
+        public abstract void Reset();
+
+        public abstract void Draw(ConsoleRenderer renderer);
     }    
 }

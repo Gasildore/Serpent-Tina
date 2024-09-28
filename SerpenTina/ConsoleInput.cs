@@ -6,23 +6,23 @@ using System.Threading.Tasks;
 
 namespace SerpenTina
 {
-    internal class ConsoleInput//a
+    internal class ConsoleInput
     {
-        public interface IArrowListener//b
+        public interface IArrowListener
         {
-            void OnArrowUp();//c
+            void OnArrowUp();
             void OnArrowDown();
             void OnArrowLeft();
             void OnArrowRight();
         }
 
-        private readonly HashSet<IArrowListener> arrowListeners = new();//d
+        private readonly HashSet<IArrowListener> arrowListeners = new();
 
-        public void Subscribe(IArrowListener l)//e
+        public void Subscribe(IArrowListener l)
         {
             arrowListeners.Add(l);
         }
-        public void Update()//f
+        public void Update()
         {
             while (Console.KeyAvailable)
             {
