@@ -1,5 +1,4 @@
-﻿using Shared;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -35,8 +34,8 @@ namespace SerpenTina
         {
             _time += deltaTime;
 
-            _screenWidth = renderer.width;
-            _screenHeight = renderer.height;
+            _screenWidth = renderer._width;
+            _screenHeight = renderer._height;
 
             _currentState?.Update(deltaTime);
             _currentState?.Draw(renderer);

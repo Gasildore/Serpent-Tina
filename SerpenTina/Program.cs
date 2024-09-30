@@ -1,5 +1,4 @@
 ﻿using SerpenTina;
-using Shared;
 using System.Diagnostics;
 
 internal class Program

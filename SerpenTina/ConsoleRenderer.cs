@@ -4,19 +4,22 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Shared
+namespace SerpenTina
 {
     internal class ConsoleRenderer
     {
-        public int width { get; private set; }
-        public int height { get; private set; }
+        public int _width { get; private set; }
+        public int _height { get; private set; }
 
         private const int MaxColors = 8;
-        private readonly ConsoleColor[] _colors;
-        private readonly char[,] _pixels;
+        private readonly ConsoleColor[] _colors;        
         private readonly byte[,] _pixelColors;
+
         private readonly int _maxWidth;
         private readonly int _maxHeight;
+
+        private char[,] _previousPixels;
+        private char[,] _pixels;
 
         public ConsoleColor bgColor {  get; set; }
 
@@ -39,11 +42,13 @@ namespace Shared
 
             _maxWidth = Console.LargestWindowWidth;
             _maxHeight = Console.LargestWindowHeight;
-            width = Console.WindowWidth;
-            height = Console.WindowHeight;
+            _width = Console.WindowWidth;
+            _height = Console.WindowHeight;
 
             _pixels = new char[_maxWidth, _maxHeight];
             _pixelColors = new byte[_maxWidth, _maxHeight];
+
+            _previousPixels = new char[_maxWidth, _maxHeight];
         }
 
         public void SetPixel(int w, int h, char val, byte colorIdx)
@@ -55,23 +60,27 @@ namespace Shared
 
         public void Render()
         {
-            Console.Clear();
             Console.BackgroundColor = bgColor;
 
-            for (var w = 0; w < width; w++)
-                for (var h = 0; h < height; h++)
-                {
+            for (var w = 0; w < _width; w++)
+                for (var h = 0; h < _height; h++)
+                {                    
                     var colorIdx = _pixelColors[w, h];
                     var color = _colors[colorIdx];
-                    var symbol = _pixels[w, h];
+                    char symbol = _pixels[w, h];
 
                     if (symbol == 0 || color == bgColor)
                         continue;
 
                     Console.ForegroundColor = color;
 
+                    if (_previousPixels[w, h] == symbol)
+                    {
+                        _pixels[w,h] = ' ';
+                    }
                     Console.SetCursorPosition(w, h);
                     Console.Write(symbol);
+                    _previousPixels[w,h] = symbol;
                 }
 
             Console.ResetColor();
@@ -84,7 +93,7 @@ namespace Shared
             if (colorIdx < 0)
                 return;
 
-            for (int i=0; i<text.Length; i++)
+            for (int i = 0; i < text.Length; i++)
             {
                 _pixels[atWidth + i, atHeight] = text[i];
                 _pixelColors[atWidth + i, atHeight] = (byte) colorIdx;
@@ -93,11 +102,12 @@ namespace Shared
 
         public void Clear()
         {
-            for (int w = 0; w < width; w++)
-                for (int h = 0; h < height; h++)
+            for (int w = 0; w < _width; w++)
+                for (int h = 0; h < _height; h++)
                 {
                     _pixelColors[w, h] = 0;
-                    _pixels[w, h] = (char) 0;
+                    _pixels[w, h] = ' ';
+                    _previousPixels[w, h] = ' ';
                 }
         }
 
@@ -107,7 +117,7 @@ namespace Shared
                 return false;
 
             if (_maxWidth != casted._maxWidth || _maxHeight != casted._maxHeight ||
-                width != casted.width || height != casted.height ||
+                _width != casted._width || _height != casted._height ||
                 _colors.Length != casted._colors.Length)
             {
                 return false;
@@ -120,8 +130,8 @@ namespace Shared
                     return false;
             }
 
-            for (int w = 0; w < width; w++)
-                for (var h = 0; h < height; h++)
+            for (int w = 0; w < _width; w++)
+                for (var h = 0; h < _height; h++)
                 {
                     if (_pixels[w, h] != casted._pixels[w, h] ||
                                     _pixelColors[w, h] != casted._pixelColors[w, h])
@@ -135,15 +145,15 @@ namespace Shared
 
         public override int GetHashCode()
         {
-            var hash = HashCode.Combine(_maxWidth, _maxHeight, width, height);
+            var hash = HashCode.Combine(_maxWidth, _maxHeight, _width, _height);
 
             for (int i=0; i<_colors.Length; i++)
             {
                 hash = HashCode.Combine(hash, _colors[i]);
             }
 
-            for (int w = 0; w < width; w++)
-                for (var h = 0; h < height; h++)
+            for (int w = 0; w < _width; w++)
+                for (var h = 0; h < _height; h++)
                 {
                     hash = HashCode.Combine(hash, _pixelColors[w, h], _pixels[w, h]);
                 }

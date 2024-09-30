@@ -30,17 +30,17 @@ namespace SerpenTina
                 switch (key.Key)
                 {
                     case ConsoleKey.UpArrow or ConsoleKey.W:
-                        foreach (var l in arrowListeners) l.OnArrowUp();
-                        break;
+                            foreach (var l in arrowListeners) l.OnArrowUp();
+                            break;
                     case ConsoleKey.DownArrow or ConsoleKey.S:
-                        foreach (var l in arrowListeners) l.OnArrowDown();
-                        break;
+                            foreach (var l in arrowListeners) l.OnArrowDown();
+                            break;
                     case ConsoleKey.LeftArrow or ConsoleKey.A:
-                        foreach (var l in arrowListeners) l.OnArrowLeft();
-                        break;
+                            foreach (var l in arrowListeners) l.OnArrowLeft();
+                            break;
                     case ConsoleKey.RightArrow or ConsoleKey.D:
-                        foreach (var l in arrowListeners) l.OnArrowRight();
-                        break;
+                            foreach (var l in arrowListeners) l.OnArrowRight();
+                            break;
                 }
             }
         }
